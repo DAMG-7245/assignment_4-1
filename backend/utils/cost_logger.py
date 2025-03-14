@@ -20,11 +20,11 @@ class CostLogger:
         
         # Model pricing per 1K tokens (in USD)
         self.model_pricing = {
-            "GPT-4o": {"input": 0.01, "output": 0.03},
-            "Gemini-Flash": {"input": 0.0035, "output": 0.0035},
-            "DeepSeek": {"input": 0.0009, "output": 0.0009},
-            "Claude": {"input": 0.008, "output": 0.024},
-            "Grok": {"input": 0.005, "output": 0.015}
+            "GPT-4o": {"input": 0.0000025, "output": 0.00001},
+            "Gemini-Flash": {"input": 0.0000001, "output": 0.0000004},
+            "DeepSeek": {"input": 0.00000027, "output": 0.0000011},
+            "Claude": {"input": 0.000015, "output": 0.000075},
+            "Grok": {"input": 0.000002, "output": 0.00001}
         }
     
     def log_cost(self, model: str, token_usage: Dict[str, Any]) -> None:

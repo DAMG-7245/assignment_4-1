@@ -1,4 +1,9 @@
-FROM python:3.9-slim
+FROM python:3.12
+
+RUN apt-get update && apt-get install -y curl 
+RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee /etc/apt/sources.list.d/google-cloud-sdk.list
+RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+RUN apt-get update && apt-get install -y google-cloud-sdk
 
 WORKDIR /app
 
@@ -6,12 +11,9 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY backend/ backend/
-COPY llm_integration/ llm_integration/
 
-# Create directory for uploaded PDFs
-RUN mkdir -p uploaded_pdfs
-VOLUME /app/uploaded_pdfs
+WORKDIR /app/backend
 
 EXPOSE 8000
 
-CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
