@@ -321,3 +321,4 @@ logs/
 .DS_Store
 
 backend/pdf_storage/
+secrets/

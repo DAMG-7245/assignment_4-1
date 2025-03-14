@@ -1,25 +1,25 @@
-version: '3.8'
+version: '3.12'
 
 services:
   backend:
-    build:
-      context: .
-      dockerfile: Dockerfile.backend
+    image: gcr.io/bigdata-project1-450016/backend:latest
     ports:
       - "8000:8000"
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - GOOGLE_APPLICATION_CREDENTIALS=/secrets/bigdata-project1-450016-c5fdbfb5391a.json
+    volumes:
+      - ./secrets/bigdata-project1-450016-c5fdbfb5391a.json:/secrets/bigdata-project1-450016-c5fdbfb5391a.json:ro
+    entrypoint: ["/bin/sh", "-c", 
+      "gcloud auth activate-service-account --key-file=/secrets/bigdata-project1-450016-c5fdbfb5391a.json && 
+      gcloud secrets versions access latest --secret=API_KEYS --project=bigdata-project1-450016 > /app/backend/endpoints.env && 
+        exec uvicorn main:app --host 0.0.0.0 --port 8000"]
     depends_on:
       - redis
-    volumes:
-      - uploaded_pdfs:/app/uploaded_pdfs
-    restart: unless-stopped
-
+  # 其他服务保持不变
   frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile.frontend
+    image: gcr.io/bigdata-project1-450016/frontend:latest
     ports:
       - "8501:8501"
     environment:
@@ -39,4 +39,3 @@ services:
 
 volumes:
   redis_data:
-  uploaded_pdfs:
