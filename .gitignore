@@ -319,3 +319,5 @@ logs/
 *.log
 
 .DS_Store
+
+backend/pdf_stotage/

@@ -6,6 +6,7 @@ from components.model_selector import render_model_selector
 from components.cost_display import render_cost_display
 from components.pdf_content_selector import render_pdf_selector
 from components.question_input import render_question_input
+from components.summarize import render_summarize_button
 
 API_BASE_URL = "http://localhost:8000"  
 API_URL = os.getenv("API_URL", "http://localhost:8000")
@@ -30,6 +31,9 @@ def initialize_session_state():
     # 新增一个 show_upload 控制上传区域是否可见
     if "show_upload" not in st.session_state:
         st.session_state.show_upload = False
+    # 添加一个标志来追踪summarize操作是否正在进行
+    if "is_summarizing" not in st.session_state:
+        st.session_state.is_summarizing = False
 
 def display_chat_history():
     """Display the chat history in a conversational format."""
@@ -74,7 +78,7 @@ def process_query(query):
             if "token_usage" in result:
                 st.session_state.token_usage["total_input_tokens"] += result["token_usage"]["input_tokens"]
                 st.session_state.token_usage["total_output_tokens"] += result["token_usage"]["output_tokens"]
-                st.session_state.token_usage["total_cost"] += result["token_usage"]["cost"]
+                st.session_state.token_usage["total_cost"] += result["token_usage"].get("cost", 0)
 
         except Exception as e:
             message_placeholder.markdown(f"Error: {str(e)}")
@@ -83,6 +87,9 @@ def generate_summary():
     if not st.session_state.pdf_content and not st.session_state.pdf_name:
         st.warning("Please upload a PDF document first.")
         return
+    
+    # Set summarizing flag to True
+    st.session_state.is_summarizing = True
     
     with st.chat_message("user"):
         st.markdown("Can you summarize this document for me?")
@@ -112,10 +119,13 @@ def generate_summary():
             if "token_usage" in result:
                 st.session_state.token_usage["total_input_tokens"] += result["token_usage"]["input_tokens"]
                 st.session_state.token_usage["total_output_tokens"] += result["token_usage"]["output_tokens"]
-                st.session_state.token_usage["total_cost"] += result["token_usage"]["cost"]
+                st.session_state.token_usage["total_cost"] += result["token_usage"].get("cost", 0)
 
         except Exception as e:
             message_placeholder.markdown(f"Error: {str(e)}")
+        
+        # Reset summarizing flag
+        st.session_state.is_summarizing = False
 
 def upload_pdf(uploaded_file):
     """Helper function to upload PDF via multipart/form-data and store content in session."""
@@ -137,8 +147,6 @@ def upload_pdf(uploaded_file):
         st.error(f"Upload failed: {str(e)}")
 
 def main():
-
-    
     # 1. 宽屏布局
     st.set_page_config(page_title="PDF AI Assistant", layout="wide")
     
@@ -161,55 +169,65 @@ def main():
     with st.sidebar:
         st.title("PDF AI Assistant")
         render_model_selector()
+        
+        # 添加更明显的功能区分割线
+        st.markdown("### PDF Actions")
+        
+        # 将Summarize按钮放在侧边栏中，使其更加突出
+        if render_summarize_button() and not st.session_state.is_summarizing:
+            generate_summary()
+        
         st.divider()
         render_cost_display()
 
-    st.header("Chat with your PDF")
-    display_chat_history()
+    # 主区域
+    col1, col2 = st.columns([3, 1])
+    
+    with col1:
+        st.header("Chat with your PDF")
+        display_chat_history()
+        
+        # ============ 底部输入栏，模拟ChatGPT风格 + 左下角"+"按钮 ============ #
+        col_plus, col_input, col_send = st.columns([0.1, 1, 0.15])
 
-    # ============ 右侧 PDF 内容展示 ============ #
-    if st.session_state.pdf_content:
-        st.subheader("PDF Content Preview")
+        # 左下角 "+" 按钮
+        with col_plus:
+            if st.button("+"):
+                st.session_state.show_upload = not st.session_state.show_upload
 
-        # 自定义滚动容器
-        scrollable_div = f"""
-        <div style="height:400px; overflow-y:auto; border:1px solid #ccc; padding:1rem;">
-        {st.session_state.pdf_content}
-        </div>
-        """
-        st.markdown(scrollable_div, unsafe_allow_html=True)
+        # 中间 文本输入框
+        with col_input:
+            user_input = st.text_input("Your message", value="", label_visibility="collapsed")
 
-    # ============ 底部输入栏，模拟ChatGPT风格 + 左下角“+”按钮 ============ #
-    col_plus, col_input, col_send = st.columns([0.1, 1, 0.15])
+        # 右侧 发送按钮
+        with col_send:
+            if st.button("Send", use_container_width=True):
+                if user_input.strip():
+                    process_query(user_input)
+                else:
+                    st.warning("Please enter a message.")
+    
+    with col2:
+        # ============ 右侧 PDF 内容展示 ============ #
+        if st.session_state.pdf_content:
+            st.subheader("PDF Content Preview")
 
-    # 左下角 “+” 按钮
-    with col_plus:
-        if st.button("+"):
-            st.session_state.show_upload = not st.session_state.show_upload
-
-    # 中间 文本输入框
-    with col_input:
-        user_input = st.text_input("Your message", value="", label_visibility="collapsed")
-
-    # 右侧 发送按钮
-    with col_send:
-        if st.button("Send", use_container_width=True):
-            if user_input.strip():
-                process_query(user_input)
-            else:
-                st.warning("Please enter a message.")
+            # 自定义滚动容器
+            scrollable_div = f"""
+            <div style="height:600px; overflow-y:auto; border:1px solid #ccc; padding:1rem;">
+            {st.session_state.pdf_content}
+            </div>
+            """
+            st.markdown(scrollable_div, unsafe_allow_html=True)
 
     # 如果点击了 +，显示上传区
     if st.session_state.show_upload:
-        with st.expander("Upload a PDF"):
+        with st.expander("Upload a PDF", expanded=True):
             uploaded_file = st.file_uploader("Select PDF", type=["pdf"])
             if uploaded_file:
                 upload_pdf(uploaded_file)
 
     selected_pdf, pdf_content = render_pdf_selector(API_BASE_URL)
-
-    # Summarize 按钮
-    st.button("Summarize PDF", on_click=generate_summary)
     if pdf_content:
         st.success(f"Content loaded from {selected_pdf}.md")
 
