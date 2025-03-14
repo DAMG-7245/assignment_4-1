@@ -9,7 +9,7 @@ Demo Link: [Insert Demo Link]
 
 Codelab: [Insert Codelab Link]  
 
-Video Link: [Insert Video Link]  
+Video Link: https://youtu.be/sCctoLpPe6w 
 
 🚀 **Process, Analyze, and Interact with PDFs using LLMs**
 
