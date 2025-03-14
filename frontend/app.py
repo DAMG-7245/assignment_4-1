@@ -4,7 +4,6 @@ import json
 import os
 from components.model_selector import render_model_selector
 from components.cost_display import render_cost_display
-# from components.file_upload import render_file_upload  # 不再用单独左列，而是做成左下角按钮
 from components.question_input import render_question_input
 
 API_URL = os.getenv("API_URL", "http://localhost:8000")
