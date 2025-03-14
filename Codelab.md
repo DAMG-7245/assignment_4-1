@@ -1,6 +1,6 @@
 ---
 
-id: pdf-processing-llm 
+id: docs 
 
 title: "AI-Powered Document Processing Pipeline with PDF Extraction"
 

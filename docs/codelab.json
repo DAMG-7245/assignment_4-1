@@ -3,8 +3,8 @@
   "format": "html",
   "prefix": "https://storage.googleapis.com",
   "mainga": "UA-49880327-14",
-  "updated": "2025-03-14T17:10:45-04:00",
-  "id": "pdf-processing-llm",
+  "updated": "2025-03-14T17:29:35-04:00",
+  "id": "docs",
   "duration": 0,
   "title": "Codelab: Building a Streamlit Application with FastAPI and LiteLLM for LLM Integration",
   "summary": "",
@@ -13,5 +13,5 @@
   "status": null,
   "category": null,
   "tags": [],
-  "url": "pdf-processing-llm"
+  "url": "docs"
 }
