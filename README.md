@@ -92,7 +92,7 @@ Additionally, the system tracks token usage to monitor and report API costs.
 ---
 
 ## **📂 Project Structure**
-
+```plaintext
 │   .dockerignore
 │   .gitignore
 │   AIUseDisclosure.md
@@ -137,7 +137,7 @@ Additionally, the system tracks token usage to monitor and report API costs.
             pdf_content_selector.py
             question_input.py
             summarize.py
-
+```
 ---
 
 ## **🚀 Installation & Setup**
