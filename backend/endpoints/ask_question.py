@@ -2,8 +2,9 @@ from fastapi import APIRouter, HTTPException, Body
 from typing import Dict, Any, Optional
 from utils.redis_stream import RedisStreamClient
 from utils.cost_logger import CostLogger
-from llm_integration.lite_llm_client import LiteLLMClient
 import logging
+from litellm import completion
+import os
 
 # Setup logger
 logging.basicConfig(level=logging.INFO)
@@ -15,7 +16,15 @@ router = APIRouter(tags=["LLM Integration"])
 # Initialize clients
 redis_client = RedisStreamClient()
 cost_logger = CostLogger()
-llm_client = LiteLLMClient()
+
+# Model mapping for LiteLLM format
+MODEL_MAPPING = {
+    "GPT-4o": "openai/gpt-4o",
+    "Gemini-Flash": "google/gemini-1.5-flash",
+    "DeepSeek": "deepseek/deepseek-coder",
+    "Claude": "anthropic/claude-3-sonnet-20240229",
+    "Grok": "xai/grok-1"
+}
 
 @router.post("/ask_question")
 async def ask_question(
@@ -41,7 +50,7 @@ async def ask_question(
     """
     try:
         # Extract parameters
-        model = payload.get("model", "GPT-4o")
+        model_name = payload.get("model", "GPT-4o")
         question = payload.get("question")
         pdf_content = payload.get("pdf_content")
         pdf_name = payload.get("pdf_name")
@@ -55,31 +64,44 @@ async def ask_question(
         # Determine what content to search
         context = selected_text if selected_text else pdf_content
         
-        # Create the prompt
+        # Create the prompt for system message
         prompt = create_qa_prompt(question, context, pdf_name)
         
-        # Call LLM to generate answer
-        response = await llm_client.generate_response(
+        # Map to LiteLLM model format
+        model = MODEL_MAPPING.get(model_name, "openai/gpt-4o")
+        
+        # Prepare messages for LiteLLM
+        messages = [
+            {"role": "system", "content": prompt},
+            {"role": "user", "content": question}
+        ]
+        
+        # Call LLM to generate answer using LiteLLM
+        response = completion(
             model=model,
-            prompt=prompt,
+            messages=messages,
             max_tokens=1000
         )
         
         # Extract answer and token usage
-        answer = response.get("content", "Failed to generate an answer.")
-        token_usage = response.get("token_usage", {})
+        answer = response.choices[0].message.content
+        token_usage = {
+            "input_tokens": response.usage.prompt_tokens,
+            "output_tokens": response.usage.completion_tokens,
+            "total_tokens": response.usage.total_tokens
+        }
         
         # Log usage to Redis
         await redis_client.publish("llm_usage", {
             "action": "ask_question",
-            "model": model,
+            "model": model_name,
             "pdf_name": pdf_name,
             "question": question,
             "token_usage": token_usage
         })
         
         # Log cost
-        cost_logger.log_cost(model, token_usage)
+        cost_logger.log_cost(model_name, token_usage)
         
         return {
             "answer": answer,
@@ -107,15 +129,13 @@ def create_qa_prompt(question: str, context: str, document_name: Optional[str] =
     doc_context = f"document '{document_name}'" if document_name else "the provided document"
     
     prompt = f"""
+    You are an AI assistant that helps answer questions about documents.
     Please answer the following question about {doc_context}. Base your answer only on the 
-    information provided in the context. If the answer cannot be found in the context, please 
+    information provided in the context below. If the answer cannot be found in the context, please 
     state that clearly.
     
     Context:
     {context}
-    
-    Question:
-    {question}
     """
     
     return prompt.strip()
