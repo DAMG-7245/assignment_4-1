@@ -4,8 +4,10 @@ import json
 import os
 from components.model_selector import render_model_selector
 from components.cost_display import render_cost_display
+from components.pdf_content_selector import render_pdf_selector
 from components.question_input import render_question_input
 
+API_BASE_URL = "http://localhost:8000"  
 API_URL = os.getenv("API_URL", "http://localhost:8000")
 
 def initialize_session_state():
@@ -135,6 +137,8 @@ def upload_pdf(uploaded_file):
         st.error(f"Upload failed: {str(e)}")
 
 def main():
+
+    
     # 1. 宽屏布局
     st.set_page_config(page_title="PDF AI Assistant", layout="wide")
     
@@ -202,9 +206,12 @@ def main():
             if uploaded_file:
                 upload_pdf(uploaded_file)
 
+    selected_pdf, pdf_content = render_pdf_selector(API_BASE_URL)
+
     # Summarize 按钮
     st.button("Summarize PDF", on_click=generate_summary)
-
+    if pdf_content:
+        st.success(f"Content loaded from {selected_pdf}.md")
 
 if __name__ == "__main__":
     main()
