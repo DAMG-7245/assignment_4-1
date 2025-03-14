@@ -1,0 +1,6 @@
+{"timestamp": "2025-03-14T01:59:33.162168", "model": "DeepSeek", "input_tokens": 219, "output_tokens": 288, "input_cost": 0.0001971, "output_cost": 0.00025919999999999996, "total_cost": 0.0004563}
+{"timestamp": "2025-03-14T02:17:18.763926", "model": "Gemini-Flash", "input_tokens": 221, "output_tokens": 333, "input_cost": 0.0007735, "output_cost": 0.0011655, "total_cost": 0.0019390000000000002}
+{"timestamp": "2025-03-14T02:25:05.319073", "model": "Grok", "input_tokens": 229, "output_tokens": 305, "input_cost": 0.001145, "output_cost": 0.004575, "total_cost": 0.00572}
+{"timestamp": "2025-03-14T02:27:33.010988", "model": "Claude", "input_tokens": 244, "output_tokens": 411, "input_cost": 0.001952, "output_cost": 0.009864, "total_cost": 0.011816}
+{"timestamp": "2025-03-14T02:34:26.375697", "model": "GPT-4o", "input_tokens": 231, "output_tokens": 264, "input_cost": 0.00231, "output_cost": 0.00792, "total_cost": 0.01023}
+{"timestamp": "2025-03-14T02:53:03.352821", "model": "GPT-4o", "input_tokens": 214, "output_tokens": 72, "input_cost": 0.00214, "output_cost": 0.0021599999999999996, "total_cost": 0.0043}

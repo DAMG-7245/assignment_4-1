@@ -19,11 +19,11 @@ cost_logger = CostLogger()
 
 # Model mapping for LiteLLM format
 MODEL_MAPPING = {
-    "GPT-4o": "openai/gpt-4o",
-    "Gemini-Flash": "google/gemini-1.5-flash",
+    "GPT-4o": "gpt-4o",
+    "Gemini-Flash": "gemini/gemini-2.0-flash",
     "DeepSeek": "deepseek/deepseek-coder",
-    "Claude": "anthropic/claude-3-sonnet-20240229",
-    "Grok": "xai/grok-1"
+    "Claude": "claude-3-opus-20240229",
+    "Grok": "xai/grok-2-latest"
 }
 
 @router.post("/ask_question")
