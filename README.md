@@ -93,6 +93,50 @@ Additionally, the system tracks token usage to monitor and report API costs.
 
 ## **📂 Project Structure**
 
+│   .dockerignore
+│   .gitignore
+│   AIUseDisclosure.md
+│   Codelab.md
+│   docker-compose.yml
+│   Dockerfile.backend
+│   Dockerfile.frontend
+│   llm_architecture.png
+│   README.md
+│   requirements.txt
+│
+├───architecture
+│       data_flow_diagram.png
+│       diag.py
+│       system_architecture.png
+│
+├───backend
+│   │   main.py
+│   │   __init__.py
+│   │
+│   ├───endpoints
+│   │       ask_question.py
+│   │       select_pdfcontent.py
+│   │       summarize.py
+│   │       upload_pdf.py
+│   │
+│   └───utils
+│           cost_logger.py
+│           redis_stream.py
+│
+├───docs
+│       design_decision.md
+│       team_contributions.md
+│
+└───frontend
+    │   app.py
+    │
+    └───components
+            cost_display.py
+            file_upload.py
+            model_selector.py
+            pdf_content_selector.py
+            question_input.py
+            summarize.py
 
 ---
 
