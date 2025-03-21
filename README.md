@@ -7,7 +7,7 @@ FRONTEND URL :https://frontend-980441147674.us-east1.run.app
  
 Demo Link: [Insert Demo Link]  
 
-Codelab: [Insert Codelab Link]  
+Codelab: (https://damg-7245.github.io/assignment_4-1/)  
 
 Video Link: https://youtu.be/sCctoLpPe6w
 
