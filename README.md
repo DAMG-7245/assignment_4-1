@@ -5,7 +5,6 @@ BACKEND URL: https://backend-980441147674.us-east1.run.app
 
 FRONTEND URL :https://frontend-980441147674.us-east1.run.app
  
-Demo Link: [Insert Demo Link]  
 
 Codelab: (https://damg-7245.github.io/assignment_4-1/)  
 
